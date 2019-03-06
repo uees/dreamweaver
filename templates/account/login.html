@@ -1,0 +1,31 @@
+{% extends '_layout/base_account.html' %}
+{% load static %}
+{% block content %}
+    <div class="container text-center">
+        <img class="mb-4" src="{% static 'img/logo.png' %}" alt="" width="72"
+             height="72">
+        <form class="form-signin" action="{% url 'account:login' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ redirect_to }}">
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {{ field }}
+                {{ field.errors }}
+            {% endfor %}
+
+            <div class="checkbox align-left">
+                <label>
+                    <input type="checkbox" value="remember-me"> 保持登录
+                </label>
+            </div>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+        </form>
+        <p>
+            <a href="{% url "account:register" %}">创建账号</a>
+            |
+            <a href="/">主页</a>
+        </p>
+        <p class="mt-5 mb-3 text-muted">&copy; 2017-2019 {{ SITE_NAME }}</p>
+    </div>
+{% endblock %}

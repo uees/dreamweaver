@@ -13,9 +13,32 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls.static import static
+from django.urls import path, re_path, include
+
+from sar.views import home
+
+
+admin.AdminSite.site_title = settings.SITE_NAME
+admin.AdminSite.site_header = '%s 管理' % settings.SITE_NAME
 
 urlpatterns = [
+    path('', home, name='home'),
+    path('', include('account.urls')),
+    path('sar/', include('sar.urls')),
     path('admin/', admin.site.urls),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    # Server statics and uploaded media
+    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
+
+    # debug_toolbar
+    urlpatterns.extend([
+        re_path(r'^__debug__/', include(debug_toolbar.urls)),
+    ])
+
