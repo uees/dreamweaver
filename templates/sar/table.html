@@ -1,15 +1,54 @@
 {% extends '_layout/base.html' %}
 {% load static %}
+{% load sar_base %}
 {% block title %}{{ table.name }}{% endblock %}
 {% block content %}
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="border-bottom border-gray pb-2 mb-0">{{ table.name }}</h6>
-        <canvas id="canvas"></canvas>
+        <div id="content" style="width:100%;">
+            <table class="table table-sm table-bordered table-striped text-center">
+                <thead>
+                <tr>
+                    <th scope="col" rowspan=2>#</th>
+                    {% for header in headers %}
+                        <th scope="col" colspan={{ header.data | length }}>{{ header.name }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for header in headers %}
+                        {% for foo in  header.data %}
+                            <th scope="col">{{ forloop.counter }}</th>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for result in results %}
+                    <tr id="result-{{ forloop.counter0 }}">
+                        <td>{{ result.label }}</td>
+                        {% for header in headers %}
+                            {% for foo in header.data %}
+                                {% if result.computed_value|get_item:header.id == forloop.counter0 %}
+                                    <td><span class="point">●</span></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <nav aria-label="Page navigation example">
+    <nav aria-label="Page navigation">
         <ul class="pagination">
             {% if results.has_previous %}
+                <li class="page-item">
+                    <a href="?page=1">&laquo; First</a>
+                </li>
                 <li class="page-item">
                     <a class="page-link" href="?page={{ results.previous_page_number }}">
                         <span class="meta-nav">&laquo;</span> Previous
@@ -17,10 +56,19 @@
                 </li>
             {% endif %}
 
+            <li class="page-item">
+                Page {{ results.number }} of {{ results.paginator.num_pages }}.
+            </li>
+
             {% if results.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ results.next_page_number }}">
                         Next <span class="meta-nav">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ results.paginator.num_pages }}">
+                        Last &raquo;
                     </a>
                 </li>
             {% endif %}
@@ -30,25 +78,45 @@
 
 {% block scripts %}
     <script>
-        var canvas = document.getElementById('canvas');
-        canvas.width = 1000;
-        canvas.height = 1000;
+        $(function () {
+            function drawLines() {
+                const table = document.querySelector('table');
+                const tableOffset = $(table).offset();
+                const pointsMap = [];
+                for (let i = 0; i < {{ headers | length }}; i++) {
+                    const points = [];
+                    for (let j = 0; j < {{ results | length }}; j++) {
+                        const pointOffset = $(`#result-${j} span.point`).offset();
+                        /**
+                         const point = {
+                    top: pointOffset.top - tableOffset.top,
+                    left: pointOffset.left - tableOffset.left,};
+                         */
+                        const point = {
+                            top: pointOffset.top + 12,
+                            left: pointOffset.left + 5,
+                        };
+                        points.push(point);
+                    }
+                    pointsMap.push(points);
+                }
+                pointsMap.forEach(points => {
+                    points.reduce((total, currentValue, currentIndex) => {
+                        if (currentIndex > 0) {
+                            // 画线
+                            line(total.left, total.top, currentValue.left, currentValue.top, table);
+                        }
+                        return currentValue
+                    })
+                });
+            }
 
-        var ctx = canvas.getContext('2d');
-        // ctx.fillStyle = 'green';
-        // ctx.fillRect(10, 10, 100, 100);
+            drawLines();
 
-        // 设置线条的颜色
-       ctx.strokeStyle = 'red';
-       ctx.lineWidth = 5;
-        // 绘制直线
-       ctx.beginPath();
-       // 起点
-       ctx.moveTo(200, 200);
-       // 终点
-       ctx.lineTo(500, 200);
-       ctx.closePath();
-       ctx.stroke();
+            $(window).resize(function () {
+                $("table div.line").remove();
+                drawLines();
+            });
+        });
     </script>
 {% endblock %}
-

@@ -135,3 +135,13 @@ footer {
 footer p {
     margin-bottom: .25rem;
 }
+
+div.line {
+    position:absolute;
+    z-index:2;
+    width:1px;
+    height:1px;
+    font-size:1px;
+    background-color:#0000FF;
+    overflow:hidden;
+}

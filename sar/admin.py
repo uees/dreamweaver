@@ -5,16 +5,33 @@ from .models import Table, TableHeader, Result
 from .widgets import JsonEditorWidget
 
 
-@admin.register(TableHeader)
-class TableHeaderAdmin(admin.ModelAdmin):
+def make_computed_value(modeladmin, request, queryset):
+    for result in queryset:
+        result.make_computed_value()
+        result.save()
+
+
+make_computed_value.short_description = "刷新值"
+
+
+@admin.register(Result)
+class ResultAdmin(admin.ModelAdmin):
+    actions = [make_computed_value]
+    list_display = ('table', 'label', 'value')
+    list_display_links = ('label', 'value')
+
+
+class TableHeaderInline(admin.StackedInline):
+    model = TableHeader
+    fields = ('name', 'rank', 'data')
     list_select_related = ('table',)
-    list_max_show_all = 20
-    list_per_page = 20
+    extra = 0
 
     formfield_overrides = {
         JSONField: {'widget': JsonEditorWidget}
     }
 
 
-admin.site.register(Result)
-admin.site.register(Table)
+@admin.register(Table)
+class TableAdmin(admin.ModelAdmin):
+    inlines = [TableHeaderInline]

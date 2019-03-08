@@ -34,17 +34,19 @@ class TableHeader(models.Model):
 
 class Result(models.Model):
     table = models.ForeignKey(Table, verbose_name="表格", on_delete=models.CASCADE)
+    label = models.CharField(max_length=64, null=True)
     value = models.IntegerField('值')
     computed_value = JSONField('计算值', null=True, editable=False)
 
     def __str__(self):
-        return "%s(%s)" % (self.table.name, self.value)
+        return "%s: %s" % (self.label, self.value)
 
     def save(self, *args, **kwargs):
-        self.computed_value = self._computed_value()
+        if not self.computed_value:
+            self.make_computed_value()
         super().save(*args, **kwargs)
 
-    def _computed_value(self):
+    def make_computed_value(self):
         computed_value = {}
         headers = self.table.tableheader_set.all()
         for header in headers:
@@ -54,7 +56,7 @@ class Result(models.Model):
                 if self.value in header.data[index]:
                     computed_value[header.id] = index
 
-        return computed_value
+        self.computed_value = computed_value
 
     class Meta:
         verbose_name = '结果'

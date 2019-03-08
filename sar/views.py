@@ -11,16 +11,16 @@ def sar(request, table_id):
 
     page = request.GET.get('page', 1)
 
-    try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        results = paginator.page(1)
-    except EmptyPage:
-        results = paginator.page(paginator.num_pages)
+    results = paginator.get_page(page)
+    headers = table.tableheader_set.all()
+
+    col_num = 0
+    for header in headers:
+        col_num += len(header.data)
 
     return render(request, 'sar/table.html', {
         "headers": table.tableheader_set.all(),
+        "col_num": col_num,
         "results": results,
         "table": table,
     })
@@ -31,5 +31,6 @@ def home(request):
     # 如果没有数据，则爬
     # shuangseqiu_data = ...
     return render(request, 'sar/home.html', {
+        'tables': Table.objects.all(),
         # "shuangseqiu_data": shuangseqiu_data,
     })
