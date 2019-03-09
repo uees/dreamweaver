@@ -2,6 +2,13 @@
 {% load static %}
 {% load sar_base %}
 {% block title %}{{ table.name }}{% endblock %}
+{% block header_css %}
+    <style>
+        span.point {
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="border-bottom border-gray pb-2 mb-0">{{ table.name }}</h6>
@@ -29,13 +36,17 @@
                         {% for header in headers %}
                             {% for foo in header.data %}
                                 {% if result.computed_value|get_item:header.id == forloop.counter0 %}
-                                    <td><span class="point">●</span></td>
+                                    {% if forloop.parentloop.parentloop.last %}
+                                        <td><span class="point tooltip-toggle" data-toggle="tooltip" data-html="true"
+                                                  title="<em>下期预测：</em> <u>{{ foo }}</u>">●</span></td>
+                                    {% else %}
+                                        <td><span class="point">●</span></td>
+                                    {% endif %}
                                 {% else %}
                                     <td></td>
                                 {% endif %}
                             {% endfor %}
                         {% endfor %}
-
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -80,6 +91,10 @@
     <script>
         $(function () {
             function drawLines() {
+                $('span.point').tooltip({
+                    placement: 'bottom',
+                });
+
                 const table = document.querySelector('table');
                 const tableOffset = $(table).offset();
                 const pointsMap = [];
@@ -87,11 +102,6 @@
                     const points = [];
                     for (let j = 0; j < {{ results | length }}; j++) {
                         const pointOffset = $(`#result-${j} span.point`).offset();
-                        /**
-                         const point = {
-                    top: pointOffset.top - tableOffset.top,
-                    left: pointOffset.left - tableOffset.left,};
-                         */
                         const point = {
                             top: pointOffset.top + 12,
                             left: pointOffset.left + 5,
