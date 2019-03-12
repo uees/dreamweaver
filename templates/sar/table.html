@@ -36,12 +36,7 @@
                         {% for header in headers %}
                             {% for foo in header.data %}
                                 {% if result.computed_value|get_item:header.id == forloop.counter0 %}
-                                    {% if forloop.parentloop.parentloop.last %}
-                                        <td><span class="point tooltip-toggle" data-toggle="tooltip" data-html="true"
-                                                  title="<em>下期预测：</em> <u>{{ foo }}</u>">●</span></td>
-                                    {% else %}
-                                        <td><span class="point">●</span></td>
-                                    {% endif %}
+                                    <td><span class="point-{{ forloop.parentloop.counter0 }}">●</span></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -60,6 +55,7 @@
                 </tr>
                 </tbody>
             </table>
+            <canvas id="my-canvas"></canvas>
         </div>
     </div>
 
@@ -100,35 +96,44 @@
     <script>
         $(function () {
             function drawLines() {
-                $('td.tooltip-toggle').tooltip({
-                    placement: 'bottom',
-                });
-
                 const table = document.querySelector('table');
+                $('#content').height($(table).height());
                 const tableOffset = $(table).offset();
                 const pointsMap = [];
+
                 for (let i = 0; i < {{ headers | length }}; i++) {
                     const points = [];
                     for (let j = 0; j < {{ results | length }}; j++) {
-                        const pointOffset = $(`#result-${j} span.point`).offset();
+                        const pointOffset = $(`#result-${j} span.point-${i}`).offset();
                         const point = {
-                            top: pointOffset.top + 12,
-                            left: pointOffset.left + 5,
+                            top: pointOffset.top - tableOffset.top - 5,
+                            left: pointOffset.left - tableOffset.left + 5,
                         };
                         points.push(point);
                     }
                     pointsMap.push(points);
                 }
+
+                var canvas = document.getElementById("my-canvas");
+                canvas.width = $(table).width();
+                canvas.height = $(table).height();
+                canvas.style.top = `-${canvas.height}px`;
+
+                var context = canvas.getContext("2d");
                 pointsMap.forEach(points => {
                     points.reduce((total, currentValue, currentIndex) => {
                         if (currentIndex > 0) {
                             // 画线
-                            line(total.left, total.top, currentValue.left, currentValue.top, table);
+                            drawLine(context, '#ff0000', total, currentValue)
                         }
                         return currentValue
                     })
                 });
             }
+
+            $('td.tooltip-toggle').tooltip({
+                placement: 'bottom',
+            });
 
             drawLines();
 
