@@ -4,7 +4,7 @@
 {% block title %}{{ table.name }}{% endblock %}
 {% block header_css %}
     <style>
-        span.point {
+        span.point, td.tooltip-toggle {
             cursor: pointer;
         }
     </style>
@@ -49,6 +49,15 @@
                         {% endfor %}
                     </tr>
                 {% endfor %}
+                <tr id="result-next">
+                    <td>下一期</td>
+                    {% for header in headers %}
+                        {% for foo in header.data %}
+                            <td class="tooltip-toggle" data-toggle="tooltip" data-html="true"
+                                title="<em>下期预测：</em> <u>{{ foo }}</u>"></td>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -91,7 +100,7 @@
     <script>
         $(function () {
             function drawLines() {
-                $('span.point').tooltip({
+                $('td.tooltip-toggle').tooltip({
                     placement: 'bottom',
                 });
 
