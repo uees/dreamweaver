@@ -4,8 +4,8 @@
 {% block title %}{{ table.name }}{% endblock %}
 {% block header_css %}
     <style>
-        span.point, td.tooltip-toggle {
-            cursor: pointer;
+        #content {
+            position: relative;
         }
 
         #content table.table {
@@ -13,25 +13,44 @@
             max-width: none;
         }
 
+        #content table thead {
+            background-color: #fbfbfb;
+        }
+
+        #content table.table span.point,
+        #content table.table td.tooltip-toggle {
+            cursor: pointer;
+        }
+
+        #content table.table span.point {
+            color: #a41515;
+            font-size: 1.4rem;
+            line-height: 1.4rem;
+        }
+
+        #content .table-sm td,
+        #content .table-sm th {
+            padding: 0;
+        }
+
         #content table .label-title {
-            width: 6rem;
-            min-width: 6rem;
+            width: 4rem;
+            min-width: 4rem;
         }
 
         #content table .sar-td {
-            width: 2.6rem;
-            min-width: 2.6rem;
+            width: 1.5rem;
+            min-width: 1.5rem;
         }
 
         #content table.table > tbody > tr > td.sar-td-1,
         #content table.table > thead > tr > th.sar-td-1 {
-            border-left: 3px solid #dee2e6 !important;
+            border-left: 5px solid #dee2e6 !important;
         }
     </style>
 {% endblock %}
 {% block content %}
     <div class="my-3 p-3 bg-white rounded box-shadow">
-        <!-- <h6 class="border-bottom border-gray pb-2 mb-0">{{ table.name }}</h6> -->
         <button id="show-line-button" class="btn btn-light" style="margin-bottom: 12px">隐藏趋势</button>
         <div id="content" style="width:100%;">
             <table class="table table-sm table-bordered table-hover text-center">
@@ -58,7 +77,7 @@
                             {% for foo in header.data %}
                                 {% if result.computed_value|get_item:header.id == forloop.counter0 %}
                                     <td class="sar-td sar-td-{{ forloop.counter }}">
-                                        <span class="point-{{ forloop.parentloop.counter0 }}">●</span>
+                                        <span class="point point-{{ forloop.parentloop.counter0 }}">●</span>
                                     </td>
                                 {% else %}
                                     <td class="sar-td sar-td-{{ forloop.counter }}"></td>
@@ -119,67 +138,12 @@
 {% block scripts %}
     <script>
         $(function () {
-            function drawLines() {
-                const table = document.querySelector('table');
-                const table_height = $(table).height();
-                const tableOffset = $(table).offset();
-                const pointsMap = [];
-
-                for (let i = 0; i < {{ headers | length }}; i++) {
-                    const points = [];
-                    for (let j = 0; j < {{ results | length }}; j++) {
-                        const pointOffset = $(`#result-${j} span.point-${i}`).offset();
-                        const point = {
-                            top: pointOffset.top - tableOffset.top - 5,
-                            left: pointOffset.left - tableOffset.left + 5,
-                        };
-                        points.push(point);
-                    }
-                    pointsMap.push(points);
-                }
-
-                var canvas = document.getElementById("my-canvas");
-
-                canvas.width = $(table).width();
-                canvas.height = table_height - 55;
-                canvas.style.top = `-${table_height}px`;
-
-                var context = canvas.getContext("2d");
-                pointsMap.forEach(points => {
-                    points.reduce((total, currentValue, currentIndex) => {
-                        if (currentIndex > 0) {
-                            // 画线
-                            drawLine(context, '#007bff', total, currentValue)
-                        }
-                        return currentValue
-                    })
-                });
-            }
-
-            function resetTable() {
-                const table = $('table.table');
-                const content = $('#content');
-
-                content.height(table.height());
-
-                if (table.width() > content.width()) {
-                    content.css({
-                        'overflow-x': 'scroll',
-                        'overflow-y': 'hidden',
-                    });
-                    content.height(table.height() + 25);
-                }
-            }
-
             $('td.tooltip-toggle').tooltip({
-                placement: 'bottom',
+                placement: 'top',
             });
 
-            drawLines();
-            resetTable();
-
             $(window).resize(function () {
-                drawLines();
+                drawLines({{ headers | length }}, {{ results | length }});
                 resetTable();
             });
 
@@ -192,6 +156,11 @@
                     $(this).text('隐藏趋势');
                 }
             });
+
+            drawLines({{ headers | length }}, {{ results | length }});
+            resetTable();
+            FixedHead();
+            fixedCol();
         });
     </script>
 {% endblock %}
