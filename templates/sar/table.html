@@ -7,24 +7,45 @@
         span.point, td.tooltip-toggle {
             cursor: pointer;
         }
+
+        #content table.table {
+            width: auto;
+            max-width: none;
+        }
+
+        #content table .label-title {
+            width: 6rem;
+            min-width: 6rem;
+        }
+
+        #content table .sar-td {
+            width: 2.6rem;
+            min-width: 2.6rem;
+        }
+
+        #content table.table > tbody > tr > td.sar-td-1,
+        #content table.table > thead > tr > th.sar-td-1 {
+            border-left: 3px solid #dee2e6 !important;
+        }
     </style>
 {% endblock %}
 {% block content %}
     <div class="my-3 p-3 bg-white rounded box-shadow">
-        <h6 class="border-bottom border-gray pb-2 mb-0">{{ table.name }}</h6>
+        <!-- <h6 class="border-bottom border-gray pb-2 mb-0">{{ table.name }}</h6> -->
+        <button id="show-line-button" class="btn btn-light" style="margin-bottom: 12px">隐藏趋势</button>
         <div id="content" style="width:100%;">
-            <table class="table table-sm table-bordered text-center">
+            <table class="table table-sm table-bordered table-hover text-center">
                 <thead>
                 <tr>
-                    <th scope="col" rowspan=2>#</th>
+                    <th class="label-title" scope="col" rowspan=2>{{ table.name }}</th>
                     {% for header in headers %}
-                        <th scope="col" colspan={{ header.data | length }}>{{ header.name }}</th>
+                        <th class="sar-td-1" scope="col" colspan={{ header.data | length }}>{{ header.name }}</th>
                     {% endfor %}
                 </tr>
                 <tr>
                     {% for header in headers %}
                         {% for foo in  header.data %}
-                            <th scope="col">{{ forloop.counter }}</th>
+                            <th scope="col" class="sar-td sar-td-{{ forloop.counter }}">{{ forloop.counter }}</th>
                         {% endfor %}
                     {% endfor %}
                 </tr>
@@ -32,23 +53,26 @@
                 <tbody>
                 {% for result in results %}
                     <tr id="result-{{ forloop.counter0 }}">
-                        <td>{{ result.label }}</td>
+                        <td class="label-title">{{ result.label }}</td>
                         {% for header in headers %}
                             {% for foo in header.data %}
                                 {% if result.computed_value|get_item:header.id == forloop.counter0 %}
-                                    <td><span class="point-{{ forloop.parentloop.counter0 }}">●</span></td>
+                                    <td class="sar-td sar-td-{{ forloop.counter }}">
+                                        <span class="point-{{ forloop.parentloop.counter0 }}">●</span>
+                                    </td>
                                 {% else %}
-                                    <td></td>
+                                    <td class="sar-td sar-td-{{ forloop.counter }}"></td>
                                 {% endif %}
                             {% endfor %}
                         {% endfor %}
                     </tr>
                 {% endfor %}
                 <tr id="result-next">
-                    <td>下一期</td>
+                    <td class="label-title">下一期</td>
                     {% for header in headers %}
                         {% for foo in header.data %}
-                            <td class="tooltip-toggle" data-toggle="tooltip" data-html="true"
+                            <td class="tooltip-toggle sar-td sar-td-{{ forloop.counter }}" data-toggle="tooltip"
+                                data-html="true"
                                 title="<em>下期预测：</em> <u>{{ foo }}</u>"></td>
                         {% endfor %}
                     {% endfor %}
@@ -97,7 +121,7 @@
         $(function () {
             function drawLines() {
                 const table = document.querySelector('table');
-                $('#content').height($(table).height());
+                const table_height = $(table).height();
                 const tableOffset = $(table).offset();
                 const pointsMap = [];
 
@@ -115,20 +139,36 @@
                 }
 
                 var canvas = document.getElementById("my-canvas");
+
                 canvas.width = $(table).width();
-                canvas.height = $(table).height() - 55;
-                canvas.style.top = `-${$(table).height()}px`;
+                canvas.height = table_height - 55;
+                canvas.style.top = `-${table_height}px`;
 
                 var context = canvas.getContext("2d");
                 pointsMap.forEach(points => {
                     points.reduce((total, currentValue, currentIndex) => {
                         if (currentIndex > 0) {
                             // 画线
-                            drawLine(context, '#ff0000', total, currentValue)
+                            drawLine(context, '#007bff', total, currentValue)
                         }
                         return currentValue
                     })
                 });
+            }
+
+            function resetTable() {
+                const table = $('table.table');
+                const content = $('#content');
+
+                content.height(table.height());
+
+                if (table.width() > content.width()) {
+                    content.css({
+                        'overflow-x': 'scroll',
+                        'overflow-y': 'hidden',
+                    });
+                    content.height(table.height() + 25);
+                }
             }
 
             $('td.tooltip-toggle').tooltip({
@@ -136,10 +176,21 @@
             });
 
             drawLines();
+            resetTable();
 
             $(window).resize(function () {
-                $("table div.line").remove();
                 drawLines();
+                resetTable();
+            });
+
+            $('#show-line-button').click(function () {
+                if ($(this).text() === '隐藏趋势') {
+                    $('#my-canvas').css('z-index', -1);
+                    $(this).text('查看趋势');
+                } else {
+                    $('#my-canvas').css('z-index', 1);
+                    $(this).text('隐藏趋势');
+                }
             });
         });
     </script>

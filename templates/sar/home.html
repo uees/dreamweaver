@@ -1,6 +1,15 @@
 {% extends '_layout/base.html' %}
 {% load static %}
 {% block title %}首页{% endblock %}
+
+{% block header_css %}
+    <style>
+        .qrcode-link:not(:last-child) {
+            margin-right: 20px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded box-shadow">
         <img class="mr-3" src="{% static 'img/logo.png' %}" alt="" width="48" height="48">
@@ -11,8 +20,8 @@
     </div>
     <div class="text-center">
         {% for table in tables %}
-            <a href="{% url 'sar:table' table.id %}" title="{{ table.name }}">
-                <img src="{% static 'img/ma.png' %}" alt="" width="128" height="128"/>
+            <a class="qrcode-link" href="{% url 'sar:table' table.id %}" title="{{ table.name }}">
+                <img class="qrcode-image" src="{% static 'img/ma.png' %}" alt="" width="128" height="128"/>
             </a>
         {% endfor %}
     </div>
