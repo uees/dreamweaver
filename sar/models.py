@@ -65,6 +65,30 @@ class Result(models.Model):
 
 class CrawlHistory(models.Model):
     # crawl https://datachart.500.com/ssq/history/history.shtml
+
+    HEADERS = ['date_code', 'red_1', 'red_2', 'red_3', 'red_4', 'red_5', 'red_6',
+               'blue', 'happy_sunday', 'jackpot_bonuses', 'first_prize_num', 'first_prize_bonus',
+               'second_prize_num', 'second_prize_bonus', 'total_bet', 'lottery_date']
+
+    HEADER_LABELS = {
+        'date_code': '期号',
+        'red_1': '红1',
+        'red_2': '红2',
+        'red_3': '红3',
+        'red_4': '红4',
+        'red_5': '红5',
+        'red_6': '红6',
+        'blue': '蓝球',
+        'happy_sunday': '快乐星期天',
+        'jackpot_bonuses': '奖池奖金(元)',
+        'first_prize_num': '一等奖注数',
+        'first_prize_bonus': '一等奖奖金(元)',
+        'second_prize_num': '二等奖注数',
+        'second_prize_bonus': '二等奖奖金(元)',
+        'total_bet': '总投注额(元)',
+        'lottery_date': '开奖日期'
+        }
+
     crawled_at = models.DateTimeField('爬取时间', null=True, editable=False)
     status = models.CharField('爬取状态', max_length=32, null=True, editable=False)
     data = JSONField('数据', null=True, editable=False)
