@@ -1,10 +1,15 @@
-from django.db import models
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
 from django_extensions.db.fields.json import JSONField
+
+User = get_user_model()
 
 
 class Table(models.Model):
     name = models.CharField('表名', max_length=64)
+    price = models.DecimalField('价格', max_digits=10, decimal_places=2, null=True)
 
     def __str__(self):
         return self.name
@@ -92,3 +97,24 @@ class CrawlHistory(models.Model):
     crawled_at = models.DateTimeField('爬取时间', null=True, editable=False)
     status = models.CharField('爬取状态', max_length=32, null=True, editable=False)
     data = JSONField('数据', null=True, editable=False)
+
+
+class Pay(models.Model):
+    user = models.ForeignKey(User, verbose_name="用户", on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, verbose_name="表格", on_delete=models.CASCADE)
+    price = models.DecimalField('价格', max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField('支付时间', editable=False, default=timezone.now)
+
+
+class Option(models.Model):
+    name = models.CharField('项目', max_length=200, unique=True, editable=False)
+    slug = models.CharField('Slug', max_length=200, unique=True, editable=False)
+    value = models.CharField('值', max_length=250, null=True, blank=True)
+    enable = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = '选项'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name

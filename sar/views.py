@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
@@ -7,6 +8,7 @@ from django.utils import timezone
 from .models import CrawlHistory, Table
 
 
+@login_required
 def sar(request, table_id):
     table = get_object_or_404(Table, pk=table_id)
 

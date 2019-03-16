@@ -1,16 +1,16 @@
-'use strict';
+const $ = window.$;
 
-var drawLine = function drawLine(context, color, start, end) {
+window.drawLine = function drawLine(context, color, start, end) {
     context.strokeStyle = color;
     context.moveTo(start.left, start.top);
     context.lineTo(end.left, end.top);
     context.stroke();
 };
 
-var fixedCol = function fixedCol() {
+window.fixedCol = function fixedCol() {
     $("#content").scroll(function () {
-        var left = $(this).scrollLeft(); // 获取盒子滚动距离
-        var tds = $("#content table tr .label-title");   // 获取所有要固定的td
+        const left = $(this).scrollLeft(); // 获取盒子滚动距离
+        const tds = $("#content table tr .label-title");   // 获取所有要固定的td
         if (left > 0) {
             // 获取每一行下面的 td 或者 th , 设置相对定位，偏移距离为盒子滚动的距离即 left
             tds.each(function (i) {
@@ -38,7 +38,7 @@ var fixedCol = function fixedCol() {
     });
 };
 
-var FixedHead = function FixedHead() {
+window.FixedHead = function FixedHead() {
     if (!(this instanceof FixedHead)) {
         return new FixedHead()
     }
@@ -52,25 +52,33 @@ var FixedHead = function FixedHead() {
     this.scroll();
 };
 
-FixedHead.prototype = {
+window.FixedHead.prototype = {
     constructor: FixedHead,
     scroll: function () {
-        var that = this;
+        const that = this;
         $(window).scroll(function () {
-            var scrollTop = $(this).scrollTop();
+            const scrollTop = $(this).scrollTop();
             if ((scrollTop > that.offsetTop) && (scrollTop < that.maxHeight)) {
                 that.$dom.css({
                     'top': (scrollTop - that.offsetTop) + 'px',
                     'position': 'absolute',
                     'z-index': 99,
-                })
+                });
+                that.parents.css({
+                    'position': 'relative',
+                    'padding-top': `${that.$dom.height()}px`,
+                });
             } else {
-                var topCss = that.$dom.css('position');
+                const topCss = that.$dom.css('position');
                 if (topCss !== 'static') {
                     that.$dom.css({
                         'top': '0px',
                         'position': 'static',
                         'z-index': 'auto',
+                    });
+                    that.parents.css({
+                        'position': 'static',
+                        'padding-top': 0,
                     })
                 }
             }
@@ -78,9 +86,9 @@ FixedHead.prototype = {
     }
 };
 
-var resetTable = function resetTable() {
-    var table = $('table.table');
-    var content = $('#content');
+window.resetTable = function resetTable() {
+    const table = $('table.table');
+    const content = $('#content');
 
     content.height(table.height());
 
@@ -93,17 +101,17 @@ var resetTable = function resetTable() {
     }
 };
 
-var drawLines = function drawLines(headers_length, results_length) {
-    var table = document.querySelector('table');
-    var table_height = $(table).height();
-    var tableOffset = $(table).offset();
-    var pointsMap = [];
+window.drawLines = function drawLines(headers_length, results_length) {
+    const table = document.querySelector('table');
+    const table_height = $(table).height();
+    const tableOffset = $(table).offset();
+    const pointsMap = [];
 
-    for (var i = 0; i < headers_length; i++) {
-        var points = [];
-        for (var j = 0; j < results_length; j++) {
-            var pointOffset = $(`#result-${j} span.point-${i}`).offset();
-            var point = {
+    for (let i = 0; i < headers_length; i++) {
+        const points = [];
+        for (let j = 0; j < results_length; j++) {
+            const pointOffset = $(`#result-${j} span.point-${i}`).offset();
+            const point = {
                 top: pointOffset.top - tableOffset.top + 2,
                 left: pointOffset.left - tableOffset.left + 7,
             };
@@ -112,13 +120,13 @@ var drawLines = function drawLines(headers_length, results_length) {
         pointsMap.push(points);
     }
 
-    var canvas = document.getElementById("my-canvas");
+    const canvas = document.getElementById("my-canvas");
 
     canvas.width = $(table).width();
     canvas.height = table_height - 55;
     canvas.style.top = '-' + table_height + 'px';
 
-    var context = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
     pointsMap.forEach(function (points) {
         points.reduce(function (total, currentValue, currentIndex) {
             if (currentIndex > 0) {

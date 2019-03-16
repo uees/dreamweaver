@@ -20,6 +20,7 @@
         </div>
     </div>
     <div class="text-center">
+        <h2>精彩"6+1"预测走势图</h2>
         {% for table in tables %}
             <a class="qrcode-link" href="{% url 'sar:table' table.id %}" title="{{ table.name }}">
                 <img class="qrcode-image" src="{% static 'img/ma.png' %}" alt="" width="128" height="128"/>
@@ -27,7 +28,7 @@
         {% endfor %}
     </div>
     <div class="my-3 p-3 bg-white rounded box-shadow">
-        <h6 class="border-bottom border-gray pb-2 mb-0">双色球走势</h6>
+        <h6 class="border-bottom border-gray pb-2 mb-0">双色球开奖记录</h6>
         {% if shuangseqiu_data|length == 0 %}
             <figure class="figure">
                 <img src="http://ww3.sinaimg.cn/large/85cc5ccbgy1fo5gordjvzj20m80m875r.jpg" class="figure-img img-fluid rounded" alt="" width="300">

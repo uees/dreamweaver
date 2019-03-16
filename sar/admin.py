@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django_extensions.db.fields.json import JSONField
 
-from .models import Table, TableHeader, Result
+from .models import Pay, Result, Table, TableHeader
 from .widgets import JsonEditorWidget
 
 
@@ -35,3 +35,10 @@ class TableHeaderInline(admin.StackedInline):
 @admin.register(Table)
 class TableAdmin(admin.ModelAdmin):
     inlines = [TableHeaderInline]
+
+
+@admin.register(Pay)
+class PayAdmin(admin.ModelAdmin):
+    list_display = ('user', 'table', 'price', 'created_at')
+    list_display_links = ('price', 'created_at')
+    list_select_related = ('user', 'table')

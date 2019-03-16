@@ -1,8 +1,11 @@
+import json
 import logging
+import os
 
 from django import template
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
+from django.templatetags.static import static
 
 
 logger = logging.getLogger(__name__)
@@ -50,3 +53,23 @@ def truncate(content):
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(str(key))
+
+
+@register.simple_tag
+def mix(type, path):
+    manifest_path = os.path.join(settings.BASE_DIR, 'public/static/rev-manifest.json')
+
+    if not os.path.isfile(manifest_path):
+        raise Exception('The Mix manifest does not exist.')
+
+    with open(manifest_path) as fp:
+        manifest = json.load(fp)
+
+    if not manifest.get(path):
+        raise Exception("Unable to locate Mix file: {path}.".format(path=path))
+
+    append_path = "{path}?id={hash}".format(
+        path=static("{type}/{path}".format(type=type, path=path)),
+        hash=manifest.get(path))
+
+    return append_path

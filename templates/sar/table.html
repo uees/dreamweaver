@@ -4,11 +4,7 @@
 {% block title %}{{ table.name }}{% endblock %}
 {% block header_css %}
     <style>
-        #content {
-            position: relative;
-        }
-
-        #content table.table {
+        #content table {
             width: auto;
             max-width: none;
         }
@@ -17,12 +13,12 @@
             background-color: #fbfbfb;
         }
 
-        #content table.table span.point,
-        #content table.table td.tooltip-toggle {
+        #content table span.point,
+        #content table td.tooltip-toggle {
             cursor: pointer;
         }
 
-        #content table.table span.point {
+        #content table span.point {
             color: #a41515;
             font-size: 1.4rem;
             line-height: 1.4rem;
@@ -43,8 +39,8 @@
             min-width: 1.5rem;
         }
 
-        #content table.table > tbody > tr > td.sar-td-1,
-        #content table.table > thead > tr > th.sar-td-1 {
+        #content table > tbody > tr > td.sar-td-1,
+        #content table > thead > tr > th.sar-td-1 {
             border-left: 5px solid #dee2e6 !important;
         }
     </style>
@@ -139,7 +135,7 @@
     <script>
         $(function () {
             $('td.tooltip-toggle').tooltip({
-                placement: 'top',
+                placement: 'bottom',
             });
 
             $(window).resize(function () {
