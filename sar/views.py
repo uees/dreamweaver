@@ -17,16 +17,28 @@ def sar(request, table_id):
     if not table.has_view_permission(request):
         return HttpResponseForbidden()
 
-    paginator = Paginator(table.result_set.all(), settings.PAGINATE_BY)
+    result_queryset = table.result_set.all()
+    paginator = Paginator(result_queryset, settings.PAGINATE_BY)
 
-    page = request.GET.get('page', paginator.num_pages)
+    page = request.GET.get('page')
 
-    results = paginator.get_page(page)
+    if page:
+        pagination = paginator.get_page(page)
+        results = pagination
+    else:
+        pagination = paginator.get_page(paginator.num_pages)
+
+        if result_queryset.count() > settings.PAGINATE_BY:
+            results = result_queryset[-settings.PAGINATE_BY:]
+        else:
+            results = result_queryset
+
     headers = table.tableheader_set.all()
 
     return render(request, 'sar/table.html', {
         "headers": headers,
         "results": results,
+        "pagination": pagination,
         "table": table,
     })
 

@@ -44,8 +44,8 @@
                     <td class="label-title">下一期</td>
                     {% for header in headers %}
                         {% for foo in header.data %}
-                            <td class="tooltip-toggle sar-td sar-td-{{ forloop.counter }}" data-toggle="tooltip"
-                                data-html="true"
+                            <td class="tooltip-toggle sar-td sar-td-{{ forloop.counter }}"
+                                data-toggle="tooltip" data-html="true" data-placement="bottom"
                                 title="<em>下期预测：</em> <u>{{ foo }}</u>"></td>
                         {% endfor %}
                     {% endfor %}
@@ -58,29 +58,29 @@
 
     <nav aria-label="Page navigation">
         <ul class="pagination">
-            {% if results.has_previous %}
+            {% if pagination.has_previous %}
                 <li class="page-item">
                     <a href="?page=1">&laquo; First</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ results.previous_page_number }}">
+                    <a class="page-link" href="?page={{ pagination.previous_page_number }}">
                         <span class="meta-nav">&laquo;</span> Previous
                     </a>
                 </li>
             {% endif %}
 
             <li class="page-item disabled">
-                <span class="page-link">Page {{ results.number }} of {{ results.paginator.num_pages }}.</span>
+                <span class="page-link">Page {{ pagination.number }} of {{ pagination.paginator.num_pages }}.</span>
             </li>
 
-            {% if results.has_next %}
+            {% if pagination.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ results.next_page_number }}">
+                    <a class="page-link" href="?page={{ pagination.next_page_number }}">
                         Next <span class="meta-nav">&raquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ results.paginator.num_pages }}">
+                    <a class="page-link" href="?page={{ pagination.paginator.num_pages }}">
                         Last &raquo;
                     </a>
                 </li>
@@ -92,9 +92,7 @@
 {% block scripts %}
     <script>
         $(function () {
-            $('td.tooltip-toggle').tooltip({
-                placement: 'bottom',
-            });
+            $('td.tooltip-toggle').tooltip();
 
             $(window).resize(function () {
                 drawLines({{ headers | length }}, {{ results | length }});

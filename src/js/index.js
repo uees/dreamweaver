@@ -1,10 +1,13 @@
 const $ = window.$;
 
 window.drawLine = function drawLine(context, color, start, end) {
+    context.lineWidth = 0.5;
+    context.beginPath();
     context.strokeStyle = color;
     context.moveTo(start.left, start.top);
     context.lineTo(end.left, end.top);
     context.stroke();
+    context.closePath();
 };
 
 window.fixedCol = function fixedCol() {
@@ -90,7 +93,11 @@ window.resetTable = function resetTable() {
     const table = $('table.table');
     const content = $('#content');
 
-    content.height(table.height());
+    content.height(table.height() + 10);
+    content.css({
+        'overflow-x': 'auto',
+        'overflow-y': 'hidden',
+    });
 
     if (table.width() > content.width()) {
         content.css({

@@ -143,7 +143,7 @@ footer p {
 // 主页 QR codes
 .qrcodes {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   padding-top: 20px;
 }
 
@@ -151,9 +151,9 @@ footer p {
   padding: 3px;
 }
 
-.qrcode-card:not(:last-child) {
-  margin-right: 50px;
-}
+// .qrcode-card:not(:last-child) {
+//   margin-right: 50px;
+// }
 
 .qrcode-link .price {
   font-size: 12px;
