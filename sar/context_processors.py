@@ -9,9 +9,7 @@ def options_processor(requests):
     if value:
         return value
 
-    update_options_cache()
-
-    return value
+    return update_options_cache()
 
 
 def update_options_cache():
@@ -22,3 +20,5 @@ def update_options_cache():
         value[option.slug] = option.value
 
     cache.set(key, value, 60 * 60 * 10)
+
+    return value

@@ -110,12 +110,15 @@ window.drawLines = function drawLines(headers_length, results_length) {
     for (let i = 0; i < headers_length; i++) {
         const points = [];
         for (let j = 0; j < results_length; j++) {
-            const pointOffset = $(`#result-${j} span.point-${i}`).offset();
-            const point = {
-                top: pointOffset.top - tableOffset.top + 2,
-                left: pointOffset.left - tableOffset.left + 7,
-            };
-            points.push(point);
+            const span = document.querySelector(`#result-${j} span.point-${i}`);
+            if (span) {
+                const pointOffset = $(span).offset();
+                const point = {
+                    top: pointOffset.top - tableOffset.top + 2,
+                    left: pointOffset.left - tableOffset.left + 7,
+                };
+                points.push(point);
+            }
         }
         pointsMap.push(points);
     }
@@ -127,15 +130,13 @@ window.drawLines = function drawLines(headers_length, results_length) {
     canvas.style.top = '-' + table_height + 'px';
 
     const context = canvas.getContext("2d");
-    pointsMap.forEach(function (points) {
-        points.reduce(function (total, currentValue, currentIndex) {
-            if (currentIndex > 0) {
-                // 画线
-                drawLine(context, '#007bff', total, currentValue)
+    for (const points of pointsMap) {
+        if (Array.isArray(points) && points.length > 1) {
+            for (let i = 0; i < points.length - 1; i++) {
+                drawLine(context, '#007bff', points[i], points[i + 1])
             }
-            return currentValue
-        })
-    });
+        }
+    }
 };
 
 $(function () {
