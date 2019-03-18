@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
@@ -12,9 +14,12 @@ from .models import CrawlHistory, Table
 def sar(request, table_id):
     table = get_object_or_404(Table, pk=table_id)
 
-    paginator = Paginator(table.result_set.all(), 25)
+    if not table.has_view_permission(request):
+        return HttpResponseForbidden()
 
-    page = request.GET.get('page', 1)
+    paginator = Paginator(table.result_set.all(), settings.PAGINATE_BY)
+
+    page = request.GET.get('page', paginator.num_pages)
 
     results = paginator.get_page(page)
     headers = table.tableheader_set.all()

@@ -11,6 +11,15 @@ class Table(models.Model):
     name = models.CharField('表名', max_length=64)
     price = models.DecimalField('价格', max_digits=10, decimal_places=2, null=True)
 
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+
+        if Pay.objects.filter(user=request.user).filter(table=self).exists():
+            return True
+
+        return False
+
     def __str__(self):
         return self.name
 
