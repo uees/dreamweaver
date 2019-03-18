@@ -105,6 +105,13 @@ class Pay(models.Model):
     price = models.DecimalField('价格', max_digits=10, decimal_places=2)
     created_at = models.DateTimeField('支付时间', editable=False, default=timezone.now)
 
+    class Meta:
+        verbose_name = '支付记录'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return "%s: ￥%s" % (self.created_at, self.price)
+
 
 class Option(models.Model):
     name = models.CharField('项目', max_length=200, unique=True, editable=False)

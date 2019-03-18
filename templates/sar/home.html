@@ -3,56 +3,56 @@
 {% load sar_base %}
 {% block title %}首页{% endblock %}
 
-{% block header_css %}
-    <style>
-        .qrcode-link:not(:last-child) {
-            margin-right: 50px;
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
     <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded box-shadow">
         <img class="mr-3" src="{% static 'img/logo.png' %}" alt="" width="48" height="48">
         <div class="lh-100">
-            <h6 class="mb-0 text-white lh-100">{{ SITE_NAME }}</h6>
+            <h6 class="mb-0 text-white lh-100">{{ site_name }}</h6>
             <small>Since 2017</small>
         </div>
     </div>
     <div class="text-center">
-        <h2>精彩"6+1"预测走势图</h2>
-        {% for table in tables %}
-            <a class="qrcode-link" href="{% url 'sar:table' table.id %}" title="{{ table.name }}">
-                <img class="qrcode-image" src="{% static 'img/ma.png' %}" alt="" width="128" height="128"/>
-            </a>
-        {% endfor %}
+        <h2 style="color: red">{{ qrcode_title }}</h2>
+        <div class="qrcodes">
+            {% for table in tables %}
+                <div class="card qrcode-card" style="width: 130px">
+                    <img class="card-img-top" src="{% static 'img/ma.png' %}" alt="" width="128" height="128"/>
+                    <div class="card-body">
+                        <a class="qrcode-link" href="{% url 'sar:table' table.id %}" title="{{ table.name }}">
+                            {{ table.name }} <span class="price">￥{{ table.price }}元</span>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="border-bottom border-gray pb-2 mb-0">双色球开奖记录</h6>
         {% if shuangseqiu_data|length == 0 %}
             <figure class="figure">
-                <img src="http://ww3.sinaimg.cn/large/85cc5ccbgy1fo5gordjvzj20m80m875r.jpg" class="figure-img img-fluid rounded" alt="" width="300">
+                <img src="http://ww3.sinaimg.cn/large/85cc5ccbgy1fo5gordjvzj20m80m875r.jpg"
+                     class="figure-img img-fluid rounded" alt="" width="300">
                 <figcaption class="figure-caption text-right">获取数据失败.</figcaption>
             </figure>
         {% else %}
-        <table class="table table-striped table-bordered table-sm">
-            <thead class="thead-dark">
+            <table class="table table-striped table-bordered table-sm">
+                <thead class="thead-dark">
                 <tr>
                     {% for label in headers %}
                         <th>{{ header_labels|get_item:label }}</th>
-                    {% endfor%}
+                    {% endfor %}
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {% for data in shuangseqiu_data %}
                     <tr>
                         {% for label in headers %}
                             <td>{{ data|get_item:label }}</td>
-                        {% endfor%}
+                        {% endfor %}
                     </tr>
-                {% endfor%}
-            </tbody>
-        </table>
+                {% endfor %}
+                </tbody>
+            </table>
         {% endif %}
     </div>
 {% endblock %}

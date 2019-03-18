@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django_extensions.db.fields.json import JSONField
 
-from .models import Pay, Result, Table, TableHeader
+from .models import Pay, Result, Table, TableHeader, Option
 from .widgets import JsonEditorWidget
+from .context_processors import update_options_cache
 
 
 def make_computed_value(modeladmin, request, queryset):
@@ -42,3 +43,27 @@ class PayAdmin(admin.ModelAdmin):
     list_display = ('user', 'table', 'price', 'created_at')
     list_display_links = ('price', 'created_at')
     list_select_related = ('user', 'table')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Option)
+class OptionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'value', 'enable')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def save_model(self, *args, **kwargs):
+        super().save_model(*args, **kwargs)
+        update_options_cache()
