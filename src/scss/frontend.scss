@@ -1,9 +1,6 @@
 html,
 body {
   overflow-x: hidden; /* Prevent scroll on narrow devices */
-}
-
-body {
   /* padding-top: 56px; */
 }
 
@@ -178,8 +175,8 @@ footer p {
 
 #content .sar-table span.point {
   color: #a41515;
-  font-size: 1.4rem;
-  line-height: 1.4rem;
+  font-size: 1.2rem;
+  line-height: 1.2rem;
 }
 
 #content .sar-table.table-sm td,
@@ -195,6 +192,15 @@ footer p {
 #content .sar-table .sar-td {
   width: 1.5rem;
   min-width: 1.5rem;
+}
+
+#content .sar-table.table-sm td {
+  line-height: 1;
+
+  &.tooltip-toggle {
+    height: 1.5rem;
+    line-height: 1.5rem;
+  }
 }
 
 #content .sar-table > tbody > tr > td.sar-td-1,

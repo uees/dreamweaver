@@ -29,7 +29,8 @@ def sar(request, table_id):
         pagination = paginator.get_page(paginator.num_pages)
 
         if result_queryset.count() > settings.PAGINATE_BY:
-            results = result_queryset[-settings.PAGINATE_BY:]
+            # 选取最后几个再反转
+            results = list(result_queryset.order_by('-id')[:settings.PAGINATE_BY])[::-1]
         else:
             results = result_queryset
 
