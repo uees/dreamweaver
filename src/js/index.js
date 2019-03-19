@@ -121,8 +121,8 @@ window.drawLines = function drawLines(headers_length, results_length) {
             if (span) {
                 const pointOffset = $(span).offset();
                 const point = {
-                    top: pointOffset.top - tableOffset.top + 2,
-                    left: pointOffset.left - tableOffset.left + 7,
+                    top: pointOffset.top - tableOffset.top,
+                    left: pointOffset.left - tableOffset.left + 6,
                 };
                 points.push(point);
             }
@@ -133,7 +133,7 @@ window.drawLines = function drawLines(headers_length, results_length) {
     const canvas = document.getElementById("my-canvas");
 
     canvas.width = $(table).width();
-    canvas.height = table_height - 55;
+    canvas.height = table_height - 50;
     canvas.style.top = '-' + table_height + 'px';
 
     const context = canvas.getContext("2d");
