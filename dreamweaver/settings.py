@@ -37,6 +37,9 @@ DEBUG = False if os.getenv("DEBUG") == 'false' else True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    '192.210.214.108',
+    'mmjingcai61.com',
+    'www.mmjingcai61.com',
 ]
 
 
@@ -145,8 +148,9 @@ PUBLIC_ROOT = os.path.join(BASE_DIR, 'public')
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(PUBLIC_ROOT, "static")
 STATICFILES_DIRS = [
-    os.path.join(PUBLIC_ROOT, 'static'),
+    STATIC_ROOT,
 ]
 
 MEDIA_ROOT = os.path.join(PUBLIC_ROOT, 'media')
